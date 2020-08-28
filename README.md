@@ -12,4 +12,4 @@ Assim que recebi o desafio, comecei minha pesquisa sobre a documentação da API
 então. Ao desenvolver o projeto, lidei com algumas dificuldades (e alguns problemas para contorná-las), o que me ocupou durante esses cinco dias de desenvolvimento. 
 Fico chateado que não tenha conseguido cumprir todos os requisitos, mas espero que tenha chegado a um resultado satisfatório e ainda ter a oportunidade de aprender e me desenvolver na Cubos. 
 
-Obrigado pela atenção!
+Se tiver algum comentário a fazer, todo feedback é bem vindo! Obrigado pela atenção!
