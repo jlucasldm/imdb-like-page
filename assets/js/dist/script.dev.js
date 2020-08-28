@@ -7,8 +7,7 @@ var genresSearchUrl = 'https://api.themoviedb.org/3/discover/movie?api_key=77e69
 
 var languageUrl = 'https://api.themoviedb.org/3/configuration/languages?api_key=77e69574c201600a6f9114b3eb3478d0';
 var imagesUrlSmall = 'https://image.tmdb.org/t/p/w185';
-var imagesUrlBig = 'https://image.tmdb.org/t/p/w342'; //const genreUrl = 'https://api.themoviedb.org/3/genre/movie/list?api_key=77e69574c201600a6f9114b3eb3478d0&language=pt-br';
-//selecionando o elemento de entrada da barra de busca
+var imagesUrlBig = 'https://image.tmdb.org/t/p/w342'; //selecionando o elemento de entrada da barra de busca
 
 var searchButton = document.querySelector('#search'); //botão da barra de pesquisa
 
@@ -33,12 +32,12 @@ function request(url, onComplete, onError) {
   fetch(url).then(function (res) {
     return res.json();
   }).then(onComplete)["catch"](onError);
-} //definindo a funcao de erro no request
+} //definindo a função de erro no request
 
 
 function handleError(error) {
   console.log('Error: ', error);
-} //identificando a entrada da busca (se por nome de filme ou genero) e fazendo o request
+} //identificando a entrada da busca (se por nome de filme ou gênero) e fazendo o request
 
 
 function searchMovie(value) {
@@ -52,7 +51,7 @@ function searchMovie(value) {
   }
 
   request(url, iterateMovies, handleError);
-} //dando request nos dados de línguas, iterando sobre eles e invocando a função para inserir o dado em um elemento
+} //dando request nos dados de línguas, iterando sobre eles e invocando a função(insertLanguage) para inserir um dado em um elemento
 
 
 function searchAndInsertLanguages(elementoDeInsercao, languageId) {
@@ -60,7 +59,7 @@ function searchAndInsertLanguages(elementoDeInsercao, languageId) {
   request(url, function (data) {
     insertLanguage(data, elementoDeInsercao, languageId);
   }, handleError);
-} //usando os dados recebidos do request para inserir o dado 'ingua' em um elemento
+} //usando os dados recebidos do request para inserir o dado 'língua' em um elemento
 
 
 function insertLanguage(data, elementoDeInsercao, languageId) {
@@ -89,8 +88,7 @@ function insertMovieDetails(movie, elementoDeInsercao) {
 
 
 function iterateMovies(data) {
-  movieContainer.innerHTML = ''; //limpa o resultado da busca anterior
-
+  movieContainer.innerHTML = '';
   var movies = data.results;
   console.log('lista de filmes retornados pela entrada: ', movies);
   var movieList = generateMovieList(movies);
@@ -137,7 +135,7 @@ function generateMovieCard(movie) {
   info.setAttribute('class', 'info'); //-----------------container do título------------------------
 
   var title = document.createElement('div');
-  title.setAttribute('class', 'title'); //inserindo titulo
+  title.setAttribute('class', 'title'); //inserindo título
 
   var divTitle = document.createElement('div');
 
@@ -146,7 +144,7 @@ function generateMovieCard(movie) {
   }
 
   title.appendChild(divTitle);
-  info.appendChild(title); //-------container dos dados gerais (sinopse, genero, porcentagem, ano);-----------
+  info.appendChild(title); //-------container dos dados gerais (sinopse, gênero, porcentagem, ano);-----------
 
   var movieData = document.createElement('div');
   movieData.setAttribute('class', 'movieData'); //inserindo porcentagem
@@ -159,7 +157,7 @@ function generateMovieCard(movie) {
   }
 
   movieData.appendChild(percentage);
-  info.appendChild(movieData); //inserindo ano de lancamento
+  info.appendChild(movieData); //inserindo ano de lançamento
 
   var year = document.createElement('div');
   year.setAttribute('class', 'year');
@@ -179,7 +177,7 @@ function generateMovieCard(movie) {
   }
 
   movieData.appendChild(sinopse);
-  info.appendChild(movieData); //inserindo genero
+  info.appendChild(movieData); //inserindo gênero
 
   var genreHolder = document.createElement('div');
   genreHolder.setAttribute('class', 'genreHolder');
@@ -207,7 +205,8 @@ function generateMovieCard(movie) {
 
     movieData.appendChild(genreHolder);
     info.appendChild(movieData);
-  }
+  } //inserindo demais elementos
+
 
   movieCard.appendChild(posterContainer);
   movieCard.appendChild(info);
@@ -218,10 +217,30 @@ function generateMovieCard(movie) {
 function generateMovieDetails(movie) {
   //gerando a div que comporta toda a estrutura dos dados detalhados do filme (detailsMovieCard + detailsTitleCard)
   var detailsCard = document.createElement('div');
-  detailsCard.setAttribute('class', 'detailsCard'); //gerando div que comporta o titulo e ano
+  detailsCard.setAttribute('class', 'detailsCard'); //gerando div que comporta o título e ano
 
   var detailsTitleCard = document.createElement('div');
-  detailsTitleCard.setAttribute('class', 'detailsTitleCard'); //gerando div que comporta os dados do filme e o poster
+  detailsTitleCard.setAttribute('class', 'detailsTitleCard'); //gerando título e a estrutura que o comporta
+
+  var detailsSpanTitle = document.createElement('span');
+  detailsSpanTitle.setAttribute('class', 'spanTitle');
+
+  if (movie.title) {
+    detailsSpanTitle.innerHTML = movie.title;
+  } //inserindo título 
+
+
+  detailsTitleCard.appendChild(detailsSpanTitle); //gerando ano de lançamento e a estrutura que o comporta
+
+  var detailsYear = document.createElement('span');
+  detailsYear.setAttribute('class', 'spanYear');
+
+  if (movie.release_date) {
+    detailsYear.innerHTML = movie.release_date;
+  } //inserindo ano de lançamento
+
+
+  detailsTitleCard.appendChild(detailsYear); //gerando div que comporta os dados do filme e o poster
 
   var detailsMovieCard = document.createElement('div');
   detailsMovieCard.setAttribute('class', 'detailsMovieCard'); //gerando div que comporta os dados do filme
@@ -230,152 +249,156 @@ function generateMovieDetails(movie) {
   detailsInfoCard.setAttribute('class', 'detailsInfoCard'); //gerando div que comporta o poster
 
   var detailsPosterContainer = document.createElement('div');
-  detailsPosterContainer.setAttribute('class', 'detailsPosterContainer'); //gerando div que comporta os dados da sinopse
+  detailsPosterContainer.setAttribute('class', 'detailsPosterContainer'); //gerando o poster
+
+  var imgB = document.createElement('img');
+
+  if (movie.poster_path) {
+    imgB.src = imagesUrlBig + movie.poster_path;
+  } //inserindo o poster
+
+
+  detailsPosterContainer.appendChild(imgB); //gerando div que comporta os dados da sinopse
 
   var detailsSinopse = document.createElement('div');
-  detailsSinopse.setAttribute('class', 'detailsSinopse');
-  var detailsInfo = document.createElement('div');
-  detailsInfo.setAttribute('class', 'detailsInfo');
+  detailsSinopse.setAttribute('class', 'detailsSinopse'); //gerando div do título "sinopse"
+
   var detailsTitleSinopse = document.createElement('div');
   detailsTitleSinopse.setAttribute('class', 'detailsTitle');
   var sinopseP = document.createElement('p');
   var hr1 = document.createElement('hr');
   sinopseP.innerHTML = 'Sinopse';
   detailsTitleSinopse.appendChild(sinopseP);
-  detailsTitleSinopse.appendChild(hr1);
+  detailsTitleSinopse.appendChild(hr1); //gerando div que vai conter o texto da sinopse
+
+  var detailsSinopseText = document.createElement('div');
+  detailsSinopseText.setAttribute('class', 'sinopseText'); //gerando sinopse
+
+  var detailsSinopseP = document.createElement('p');
+
+  if (movie.overview) {
+    detailsSinopseP.innerHTML = movie.overview;
+  } //inserindo sinopse
+
+
+  detailsSinopseText.appendChild(detailsSinopseP); //gerando div que vai comportar cada elemento de informações (título e dados de "situação", "duração" ...)
+
+  var detailsInfo = document.createElement('div');
+  detailsInfo.setAttribute('class', 'detailsInfo'); //gerando div do título "informações"
+
   var detailsTitleInfo = document.createElement('div');
   detailsTitleInfo.setAttribute('class', 'detailsTitle');
   var infoP = document.createElement('p');
   var hr2 = document.createElement('hr');
   infoP.innerHTML = 'Informações';
   detailsTitleInfo.appendChild(infoP);
-  detailsTitleInfo.appendChild(hr2);
-  var detailsSinopseText = document.createElement('div');
-  detailsSinopseText.setAttribute('class', 'sinopseText'); //estrutura que segura as informações de lucro e tal
+  detailsTitleInfo.appendChild(hr2); //estrutura que segura as informações de lucro, situação...
 
   var detailsDataHolder = document.createElement('div');
-  detailsDataHolder.setAttribute('class', 'dataHolder'); //esrabelecendo o holder de situação (sem os dados)
+  detailsDataHolder.setAttribute('class', 'dataHolder'); //gerando o holder de 'situação' (sem os dados)
 
   var dataContainerSituacao = document.createElement('div');
-  dataContainerSituacao.setAttribute('class', 'dataContainer');
+  dataContainerSituacao.setAttribute('class', 'dataContainer'); //gerando a estrutura do título 'situação'
+
   var dataSituacaoTitle = document.createElement('div');
   dataSituacaoTitle.setAttribute('class', 'dataTitle');
   var situacaoP = document.createElement('p');
   situacaoP.innerHTML = 'Situação';
-  dataSituacaoTitle.appendChild(situacaoP);
+  dataSituacaoTitle.appendChild(situacaoP); //gerando a estrutura do dado de 'situação'
+
   var dataSituacao = document.createElement('div');
   dataSituacao.setAttribute('class', 'data');
-  dataSituacao.innerHTML = movie.status;
+  dataSituacao.innerHTML = movie.status; //inserindo elementos
+
   dataContainerSituacao.appendChild(dataSituacaoTitle);
-  dataContainerSituacao.appendChild(dataSituacao); //esrabelecendo o holder de idioma (sem os dados)
+  dataContainerSituacao.appendChild(dataSituacao); //gerando o holder de 'idioma' (sem os dados)
 
   var dataContainerIdioma = document.createElement('div');
-  dataContainerIdioma.setAttribute('class', 'dataContainer');
+  dataContainerIdioma.setAttribute('class', 'dataContainer'); //gerando a estrutura do título 'idioma'
+
   var dataIdiomaTitle = document.createElement('div');
   dataIdiomaTitle.setAttribute('class', 'dataTitle');
   var idiomaP = document.createElement('p');
   idiomaP.innerHTML = 'Idioma';
-  dataIdiomaTitle.appendChild(idiomaP);
+  dataIdiomaTitle.appendChild(idiomaP); //gerando a estrutura do dado de 'idioma'
+
   var dataIdioma = document.createElement('div');
   dataIdioma.setAttribute('class', 'data');
-  searchAndInsertLanguages(dataIdioma, movie.original_language); //dataIdioma.innerHTML = movie.spoken_languages[0].name;
+  searchAndInsertLanguages(dataIdioma, movie.original_language); //inserindo elementos
 
   dataContainerIdioma.appendChild(dataIdiomaTitle);
-  dataContainerIdioma.appendChild(dataIdioma); //esrabelecendo o holder de duração (sem os dados)
+  dataContainerIdioma.appendChild(dataIdioma); //gerando o holder de duração (sem os dados)
 
   var dataContainerDuracao = document.createElement('div');
-  dataContainerDuracao.setAttribute('class', 'dataContainer');
+  dataContainerDuracao.setAttribute('class', 'dataContainer'); //gerando estrutura do título 'duração'
+
   var dataDuracaoTitle = document.createElement('div');
   dataDuracaoTitle.setAttribute('class', 'dataTitle');
   var duracaoP = document.createElement('p');
   duracaoP.innerHTML = 'Duração';
-  dataDuracaoTitle.appendChild(duracaoP);
+  dataDuracaoTitle.appendChild(duracaoP); //gerando estrutura do dado 'duração'
+
   var dataDuracao = document.createElement('div');
   dataDuracao.setAttribute('class', 'data');
-  dataDuracao.innerHTML = movie.runtime + ' minutos';
+  dataDuracao.innerHTML = movie.runtime + ' minutos'; //inserindo elementos
+
   dataContainerDuracao.appendChild(dataDuracaoTitle);
-  dataContainerDuracao.appendChild(dataDuracao); //esrabelecendo o holder de orçamento (sem os dados)
+  dataContainerDuracao.appendChild(dataDuracao); //gerando o holder de orçamento (sem os dados)
 
   var dataContainerOrcamento = document.createElement('div');
-  dataContainerOrcamento.setAttribute('class', 'dataContainer');
+  dataContainerOrcamento.setAttribute('class', 'dataContainer'); //gerando a estrutura do título 'orçamento'
+
   var dataOrcamentoTitle = document.createElement('div');
   dataOrcamentoTitle.setAttribute('class', 'dataTitle');
   var orcamentoP = document.createElement('p');
   orcamentoP.innerHTML = 'Orçamento';
-  dataOrcamentoTitle.appendChild(orcamentoP);
+  dataOrcamentoTitle.appendChild(orcamentoP); //gerando estrutura do dado 'orçamento'
+
   var dataOrcamento = document.createElement('div');
   dataOrcamento.setAttribute('class', 'data');
-  dataOrcamento.innerHTML = '$' + movie.budget.toLocaleString('pt-BR');
+  dataOrcamento.innerHTML = '$' + movie.budget.toLocaleString('pt-BR'); //inserindo elementos
+
   dataContainerOrcamento.appendChild(dataOrcamentoTitle);
-  dataContainerOrcamento.appendChild(dataOrcamento); //esrabelecendo o holder de receita (sem os dados)
+  dataContainerOrcamento.appendChild(dataOrcamento); //gerando o holder de receita (sem os dados)
 
   var dataContainerReceita = document.createElement('div');
-  dataContainerReceita.setAttribute('class', 'dataContainer');
+  dataContainerReceita.setAttribute('class', 'dataContainer'); //gerando a estrutura do título 'receita'
+
   var dataReceitaTitle = document.createElement('div');
   dataReceitaTitle.setAttribute('class', 'dataTitle');
   var receitaP = document.createElement('p');
   receitaP.innerHTML = 'Receita';
-  dataReceitaTitle.appendChild(receitaP);
+  dataReceitaTitle.appendChild(receitaP); //gerando estrutura do dado 'receita'
+
   var dataReceita = document.createElement('div');
   dataReceita.setAttribute('class', 'data');
-  dataReceita.innerHTML = '$' + movie.revenue.toLocaleString('pt-BR');
+  dataReceita.innerHTML = '$' + movie.revenue.toLocaleString('pt-BR'); //inserindo elementos
+
   dataContainerReceita.appendChild(dataReceitaTitle);
-  dataContainerReceita.appendChild(dataReceita); //esrabelecendo o holder de receita (sem os dados)
+  dataContainerReceita.appendChild(dataReceita); //esrabelecendo o holder do lucro (sem os dados)
 
   var dataContainerLucro = document.createElement('div');
-  dataContainerLucro.setAttribute('class', 'dataContainer');
+  dataContainerLucro.setAttribute('class', 'dataContainer'); //gerando estrutura do título 'lucro'
+
   var dataLucroTitle = document.createElement('div');
   dataLucroTitle.setAttribute('class', 'dataTitle');
   var lucroP = document.createElement('p');
   lucroP.innerHTML = 'Lucro';
-  dataLucroTitle.appendChild(lucroP);
+  dataLucroTitle.appendChild(lucroP); //gerando estrutura do dado 'lucro'
+
   var dataLucro = document.createElement('div');
   dataLucro.setAttribute('class', 'data');
   var lucro = movie.revenue - movie.budget;
-  dataLucro.innerHTML = '$' + lucro.toLocaleString('pt-BR');
+  dataLucro.innerHTML = '$' + lucro.toLocaleString('pt-BR'); //inserindo elementos
+
   dataContainerLucro.appendChild(dataLucroTitle);
-  dataContainerLucro.appendChild(dataLucro); //construindo o genreAndPercentageHolder
+  dataContainerLucro.appendChild(dataLucro); //gerando a estrutura que comporta os gêneros e a porcentagem
 
   var genreAndPercentageHolder = document.createElement('div');
-  genreAndPercentageHolder.setAttribute('class', 'genreAndPercentageDetailsHolder');
+  genreAndPercentageHolder.setAttribute('class', 'genreAndPercentageDetailsHolder'); //gerando a estrutura que comporta os gêneros
+
   var genreDetailsHolder = document.createElement('div');
-  genreDetailsHolder.setAttribute('class', 'genreDetailsHolder');
-  var percentageDetailsHolder = document.createElement('div');
-  percentageDetailsHolder.setAttribute('class', 'percentageDetailsHolder'); //----------------inserindo imagem-----------------
-
-  var imgB = document.createElement('img');
-
-  if (movie.poster_path) {
-    imgB.src = imagesUrlBig + movie.poster_path;
-  }
-
-  detailsPosterContainer.appendChild(imgB); //----------------inserindo titulo-----------------
-
-  var detailsSpanTitle = document.createElement('span');
-  detailsSpanTitle.setAttribute('class', 'spanTitle');
-
-  if (movie.title) {
-    detailsSpanTitle.innerHTML = movie.title;
-  }
-
-  detailsTitleCard.appendChild(detailsSpanTitle); //----------------inserindo ano de lancamento-----------------
-
-  var detailsYear = document.createElement('span');
-  detailsYear.setAttribute('class', 'spanYear');
-
-  if (movie.release_date) {
-    detailsYear.innerHTML = movie.release_date;
-  }
-
-  detailsTitleCard.appendChild(detailsYear); //----------------inserindo sinopse-----------------
-
-  var detailsSinopseP = document.createElement('p');
-
-  if (movie.overview) {
-    detailsSinopseP.innerHTML = movie.overview;
-  }
-
-  detailsSinopseText.appendChild(detailsSinopseP); //---------------inserindo genero------------------
+  genreDetailsHolder.setAttribute('class', 'genreDetailsHolder'); //inserindo genero
 
   for (var j = 0; j < 3; j++) {
     genre = movie.genres[j];
@@ -397,8 +420,11 @@ function generateMovieDetails(movie) {
       genre3Details.innerHTML = genre.name;
       genreDetailsHolder.appendChild(genre3Details);
     }
-  } //------------------------inserindo porcentagem----------
+  } //gerando a estrutura que comporta a porcentagem
 
+
+  var percentageDetailsHolder = document.createElement('div');
+  percentageDetailsHolder.setAttribute('class', 'percentageDetailsHolder'); //inserindo porcentagem
 
   var percentageDetails = document.createElement('div');
   percentageDetails.setAttribute('class', 'percentageDetails');
@@ -407,7 +433,7 @@ function generateMovieDetails(movie) {
     percentageDetails.innerHTML = movie.vote_average;
   }
 
-  percentageDetailsHolder.appendChild(percentageDetails); //-----------------------inserindo elementos---------------
+  percentageDetailsHolder.appendChild(percentageDetails); //inserindo demais elementos(estruturas que já contém os dados relevantes) na página
 
   detailsSinopse.appendChild(detailsTitleSinopse);
   detailsSinopse.appendChild(detailsSinopseText);
@@ -430,9 +456,10 @@ function generateMovieDetails(movie) {
   detailsCard.appendChild(detailsMovieCard);
   return detailsCard;
 }
-/*função para converter generos de id->string (poderia ter feito uma função, como fiz com a língua. Mas me pareceu menos 
-esforço buscar manualmente os dados e construir a série de 'ifs' que dedicar mais tempo a estudo e pesquisa de estruturas 
-além de construí-las).
+/*função para converter generos de id->string (poderia ter feito uma função, como fiz com searchAndInsertLanguages(). Mas me pareceu no momento 
+menos esforço buscar manualmente os dados e construir a série de 'ifs', ao invés dedicar mais tempo ao estudo e pesquisa das estruturas 
+necessárias além de construí-las.Acabei depois aprendendo ao desenvolver searchAndInsertLanguages(), mas me falta tempo para construir uma nova 
+função, testá-la e implementá-la).
 */
 
 

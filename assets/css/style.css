@@ -36,22 +36,9 @@ hr {
     color: #0d253f;
 }
 
+/*botão de input*/
 #search {
     visibility: hidden;
-}
-
-.content {
-    border: solid 1px;
-    border-color: #01b4e4;
-    display: none;
-}
-
-.content-dispay {
-    display: block;
-}
-
-#content-close {
-    background-color: #0d253f;
 }
 
 /*barra de busca*/
@@ -69,6 +56,7 @@ hr {
     display: block;
 }
 
+/*estabelecendo cores para o placeholder da barra de busca*/
 ::-webkit-input-placeholder {
     color: #01b4e4;
 }
@@ -86,7 +74,10 @@ hr {
 }
 
 
-/*-----------------------------------------------RESULTADOS DAS PESQUISAS----------------------------------------------*/
+
+
+/*------RESULTADOS DAS PESQUISAS-----*/
+/*o cartão em si, que comporta o poster e informações dos filmes*/
 .movieCard {
     display: flex;
     margin-left: auto;
@@ -97,18 +88,16 @@ hr {
 
 }
 
-/*Container dos cartazes de filme*/
+/*container dos cartazes de filme*/
 .posterContainer {
     background-color: #8b8b8b;
     float: left;
     height: 100%;
     width: 185px;
 }
-
 .posterContainer img:hover{
     cursor: pointer;
 }
-
 
 /*container do título e informações do filme*/
 .info {
@@ -117,8 +106,7 @@ hr {
     height: 100%;
 }
 
-
-/*Container do título*/
+/*container do título do filme*/
 .title {
     font-family: Abel;
     background-color: #0d253f;
@@ -126,9 +114,7 @@ hr {
     height: 20%;
     position: relative;
 }
-
-
-/*Título do card do filme*/
+/*título do filme*/
 .title div{
     overflow: hidden;
     text-overflow: ellipsis;
@@ -137,9 +123,16 @@ hr {
     font-size: 1.9em;
 }
 
+/*container das informações do filme (ano, sinopse, gêneros...)*/
+.movieData{
+    background-color: #e2e2e2;
+    flex-grow: 1;
+    height: 80%;
+    position: relative;
+}
 
 /*container da porcentagem*/
-.percentage{
+.percentage {
     background-color: #0d253f;
     border: solid 4px #01b4e4;
     position: relative;
@@ -152,15 +145,7 @@ hr {
     border-radius: 100%;
 }
 
-
-/*Container das informações do filme*/
-.movieData{
-    background-color: #e2e2e2;
-    flex-grow: 1;
-    height: 80%;
-    position: relative;
-}
-
+/*container do ano*/
 .year{
     position: absolute;
     left: 93px;
@@ -171,6 +156,7 @@ hr {
     font-size: 1.4em;
 }
 
+/*container da sinopse*/
 .sinopse{
     overflow: auto;
     text-overflow: ellipsis;
@@ -181,7 +167,7 @@ hr {
     color: #000000;
 }
 
-
+/*estrutura que comporta os diferentes gêneros*/
 .genreHolder{
     display: flex;
     width: 86%;
@@ -191,7 +177,7 @@ hr {
     height: 13%;
 }
 
-
+/*container dos gêneros*/
 .genre{
     display: inline-block;
     font-family: Abel;
@@ -210,20 +196,20 @@ hr {
 
 
 
-
-
-/*-----------------------------------------------DETALHES DOS FILMES------------------------------------------*/
-
+/*-------DETALHES DOS FILMES-------*/
+/*estrutura que comporta os detalhes do filme e o trailer*/
 .detailsCardHolder{
     margin-bottom: 30px;
 }
 
+/*estrutura que comporta todos os elementos dos detalhes do filme*/
 .detailsCard{
     background-color: #f0f0f0;
     width: 100%;
     height: 570px;
 }
 
+/*container do título e ano de um filme*/
 .detailsTitleCard{
     display: flex;
     position: relative;
@@ -231,11 +217,11 @@ hr {
     height: 57px;
     flex-grow: 1;
 }
-
 .detailsTitleCard:hover{
     cursor: pointer;
 }
 
+/*título do filme*/
 .spanTitle {
     font-family: Abel;
     position: absolute;
@@ -244,6 +230,7 @@ hr {
     font-size: 1.9em;
 }
 
+/*ano do filme*/
 .spanYear {
     position: absolute;
     top: 25%;
@@ -252,6 +239,7 @@ hr {
     color: #8b8b8b;
 }
 
+/*container dos demais detalhes do filme(sinopse, informações...) + poster*/
 .detailsMovieCard{
     position: relative;
     height: 513px;
@@ -259,22 +247,13 @@ hr {
     display: flex;
 }
 
-.detailsPosterContainer{
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 513px;
-    width: 342px;
-    background-color: #8b8b8b;
-}
-
-
+/*container das demais informações do filme*/
 .detailsInfoCard{
     height: 513px;
     flex-grow: 1;
 }
 
-
+/*container das informações referentes à sinopse*/
 .detailsSinopse{
     margin-top: 30px;
     margin-left: 25px;
@@ -282,12 +261,14 @@ hr {
     height: 40%;
 }
 
+/*todos os demais títulos do elemento*/
 .detailsTitle{
     font-family: Abel;
     font-size: 1.3em;
     padding-bottom: 2px;
 }
 
+/*texto da sinopse*/
 .sinopseText{
     overflow: auto;
     text-overflow: ellipsis;
@@ -296,7 +277,7 @@ hr {
     color: #000000;
 }
 
-
+/*estrutura que comporta a seção 'informações'*/
 .detailsInfo{
     height: 15%;
     margin-top: 0px;
@@ -305,6 +286,7 @@ hr {
     margin-bottom: 80px;
 }
 
+/*estrutura que comprta cada elemento das infromações (título+dado)*/
 .dataHolder{
     display: flex;
     justify-content: space-between;
@@ -312,6 +294,7 @@ hr {
     height: 100%;
 }
 
+/*estrutura que contém o título de cada elemento das informações (situação, lucro...)*/
 .dataTitle{
     font-family: Abel;
     width: 100%;
@@ -321,12 +304,14 @@ hr {
     padding-top: 8px;
 }
 
+/*estrutura que contém dado de cada elemento das informações (situação, lucro...)*/
 .dataContainer{
     display: inline-block;
     height: 100%;
     width: 15%;
 }
 
+/*dado de cada elemento das informações (situação, lucro...)*/
 .data {
     text-align: center;
     height: 60%;
@@ -335,6 +320,7 @@ hr {
     color: #000000;
 }
 
+/*estrutura que comporta os gêneros e porcentagem*/
 .genreAndPercentageDetailsHolder {
     display: flex;
     height: 15%;
@@ -343,19 +329,20 @@ hr {
     margin-right: 367px;
 }
 
+/*estrutura que comporta os gêneros*/
 .genreDetailsHolder{
     display: inline-block;
     height: 100%;
     width: 80%;
 }
 
+/*gêneros*/
 .genreDetails{
     font-family: Abel;
     display: inline-block;
     margin-top: 20px;
     background-color: #ffffff;
     height: 40%;
-    background-color: #ffffff;
     padding: 5px 10px;
     border: solid 1px;
     border-color: #01b4e4;
@@ -363,13 +350,14 @@ hr {
     margin-right: 15px;
 }
 
-
+/*estrutura que comporta a porcentagem*/
 .percentageDetailsHolder{
     display: inline-block;
     width: 30%;
     height: 100%;
 }
 
+/*porcentagem*/
 .percentageDetails{
     background-color: #0d253f;
     border: solid 4px #01b4e4;
@@ -382,10 +370,21 @@ hr {
     float: right;
 }
 
+/*container do poster*/
+.detailsPosterContainer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 513px;
+    width: 342px;
+    background-color: #8b8b8b;
+}
 
 
-/*----------------------------------------------TRAILER----------------------------------------------------*/
 
+
+/*------------TRAILER------------*/
+/*estrutura que comporta o trailer*/
 .trailerContainer{
     background-color: #f0f0f0;
     position: relative;
@@ -394,6 +393,7 @@ hr {
     padding-top: 56.25%;
 }
 
+/*trailer*/
 iframe {
     position: absolute;
     top: 0;
@@ -407,41 +407,48 @@ iframe {
 
 
 
-/*------------------------------MEDIA QUERY--------------------------------------*/
-
+/*----------MEDIA QUERY----------*/
 @media(min-width:787px) and (max-width: 1078px){
+    /*estrutura que comprta cada elemento das infromações (título+dado)*/
     .dataHolder{
         display: block;
     }
 
+    /*estrutura que contém dado de cada elemento das informações (situação, lucro...)*/
     .dataContainer{
         width: 30%;
         height: 40%;
     }
 
-    .dataContainer .data{
+    /*dado de cada elemento das informações (situação, lucro...)*/
+    .data{
         padding-top: 20px;
     }
 }
 
 @media(max-width: 786px){
+    /*estrutura que comprta cada elemento das infromações (título+dado)*/
     .dataHolder{
         display: block;
     }
 
+    /*estrutura que contém dado de cada elemento das informações (situação, lucro...)*/
     .dataContainer {
         width: 50%;
         height: 20%;
     }
 
-    .dataContainer .dataTitle{
+    /*estrutura que contém o título de cada elemento das informações (situação, lucro...)*/
+    .dataTitle{
         padding-top: 5px;
     }
 
-    .dataContainer .data{
+    /*dado de cada elemento das informações (situação, lucro...)*/
+    .data{
         padding-top: 20px;
     }
 
+    /*porcentagem*/
     .percentageDetails{
         height: 80px;
         width: 80px;
@@ -449,10 +456,12 @@ iframe {
         padding-top: 20px;
     }
 
+    /*estrutura que comporta os gêneros*/
     .genreDetailsHolder{
         padding-top: 20px;
     }
 
+    /*gêneros*/
     .genreDetails{
         height: 30px;
         margin: 5px;
