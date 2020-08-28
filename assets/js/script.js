@@ -1,6 +1,8 @@
 //valores da api
 const api_Key = '77e69574c201600a6f9114b3eb3478d0';
 const moviesSearchUrl = 'https://api.themoviedb.org/3/search/movie?api_key=77e69574c201600a6f9114b3eb3478d0&language=pt-br&query=';
+const genresSearchUrl = 'https://api.themoviedb.org/3/discover/movie?api_key=77e69574c201600a6f9114b3eb3478d0&language=pt-br&with_genres='; //o proximo parametro precisa ser um numero
+const languageUrl = 'https://api.themoviedb.org/3/configuration/languages?api_key=77e69574c201600a6f9114b3eb3478d0';
 const imagesUrlSmall = 'https://image.tmdb.org/t/p/w185';
 const imagesUrlBig = 'https://image.tmdb.org/t/p/w342';
 //const genreUrl = 'https://api.themoviedb.org/3/genre/movie/list?api_key=77e69574c201600a6f9114b3eb3478d0&language=pt-br';
@@ -9,14 +11,15 @@ const imagesUrlBig = 'https://image.tmdb.org/t/p/w342';
 const searchButton = document.querySelector('#search'); //botão da barra de pesquisa
 const inputElement = document.querySelector('#searchBar'); //barra de busca
 const movieContainer = document.querySelector('#movieContainer'); //div que contem os filmes
-//const imageElement = document.querySelector('img')
 
-//gerando url dos trailers (ainda em idioma ingles)
+
+//gerando url do trailer de um filme, buscado pelo seu id
 function generateTrailerUrl(movieId) {
     var url = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=77e69574c201600a6f9114b3eb3478d0&language=pt-br`;
     return url;
 }
 
+//gerando o url dos dados de um único filme, buscado pelo seu id
 function generateMoviesUrl(movieId){
     var url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=77e69574c201600a6f9114b3eb3478d0&language=pt-br`;
     return url;
@@ -30,39 +33,73 @@ function request(url, onComplete, onError) {
         .catch(onError);
 }
 
-//formatando o request de filmes
-function searchMovie(value) {
-    var url = moviesSearchUrl + value;
-    request(url, iterateMovies, handleError);
-}
-
-//recebendo dados e inserindo os cartazes dos filmes
-function iterateMovies(data) {
-    movieContainer.innerHTML = ''; //limpa o resultado da busca anterior
-    var movies = data.results; //devolve um array com objetos de filmes
-    console.log('lista de filmes: ', movies);
-    var movieList = generateMovieList(movies);
-    movieContainer.appendChild(movieList);
-    console.log('Dados brutos: ', data);
-}
-
+//definindo a funcao de erro no request
 function handleError(error) {
     console.log('Error: ', error);
 }
 
-function logMoviesData(moviesUrl) {
-    request(moviesUrl,((data) => {
-        console.log('log_movies_data: ', data);
-    }), handleError);
+//identificando a entrada da busca (se por nome de filme ou genero) e fazendo o request
+function searchMovie(value) {
+    var id = genreStringToId(value);
+    var url;
+    if(value === id){
+        url = moviesSearchUrl + value;
+    }else{
+        url = genresSearchUrl + id;
+    }
+    request(url, iterateMovies, handleError);
 }
 
-
-function acessMovieData(movieId) {
-    var url = generateMoviesUrl(movieId);
-    logMoviesData(url);
+function searchAndInsertLanguages(elementoDeInsercao, languageId){
+    var url = languageUrl;
+    request(url, (data) => {
+        insertLanguage(data, elementoDeInsercao, languageId);
+    }, handleError);
 }
 
-//responsável por construir os cards dos filmes recebendo um array com objetos de filmes
+/*
+function iterateLanguage(data, languageId){
+    var language;
+    console.log('lingua: ', data);
+    for(var i=0; i<data.length; i++){
+        language = data[i];
+        if(languageId === language.iso_639_1){
+            return language.name;
+        }
+    }
+}*/
+
+function insertLanguage(data, elementoDeInsercao, languageId){
+    var language;
+    console.log('id da lingua: ', languageId);
+    for (var i = 0; i < data.length; i++) {
+        language = data[i];
+        if (languageId === language.iso_639_1) {
+            elementoDeInsercao.innerHTML = language.name;
+        }
+    }
+}
+
+function insertMovieDetails(movie, elementoDeInsercao) {
+    console.log('movie: ', movie);
+    var detailsContainer = generateMovieDetails(movie);
+
+    if (detailsContainer) {
+        console.log('details container', detailsContainer);
+        elementoDeInsercao.appendChild(detailsContainer);
+    }
+}
+
+//recebendo dados e inserindo a lista de filmes no container
+function iterateMovies(data) {
+    movieContainer.innerHTML = ''; //limpa o resultado da busca anterior
+    var movies = data.results;
+    console.log('lista de filmes retornados pela entrada: ', movies);
+    var movieList = generateMovieList(movies);
+    movieContainer.appendChild(movieList);
+}
+
+//responsável por construir a lista de card de filmes
 function generateMovieList(movies) {
     var movieList = document.createElement('div');
     movieList.setAttribute('class', 'movieList');
@@ -82,119 +119,134 @@ searchButton.onclick = function (event) {
     console.log('Value: ', value);
 };
 
-
+//gerando o card de cada filme separadamente
 function generateMovieCard(movie){
-    //criando estruturas fundamentais do card do filme
+    //---------container de todos os elementos-------------
     var movieCard = document.createElement('div');
     movieCard.setAttribute('class', 'movieCard');
 
+
+    //---------------container do poster-------------------
     var posterContainer = document.createElement('div');
     posterContainer.setAttribute('class', 'posterContainer');
 
+    //inserindo poster
+    var imgS = document.createElement('img');
+    if (movie.poster_path) {
+        imgS.src = imagesUrlSmall + movie.poster_path;
+        imgS.setAttribute('data-movie-id', movie.id);
+    }
+    posterContainer.appendChild(imgS);
+
+
+
+    //---container das informações do filme (title + movieData)---
     var info = document.createElement('div');
     info.setAttribute('class', 'info');
 
+    //-----------------container do título------------------------
     var title = document.createElement('div');
     title.setAttribute('class', 'title');
 
+    //inserindo titulo
+    var divTitle = document.createElement('div');
+    if (movie.title) {
+        divTitle.innerHTML = movie.title;
+    }
+    title.appendChild(divTitle);
+    info.appendChild(title);
+
+
+
+    //-------container dos dados gerais (sinopse, genero, porcentagem, ano);-----------
     var movieData = document.createElement('div');
     movieData.setAttribute('class', 'movieData');
 
-        //----------------inserindo imagem-----------------
-        var imgS = document.createElement('img');
-        imgS.src = imagesUrlSmall + movie.poster_path;
-        imgS.setAttribute('data-movie-id', movie.id);
-
-        if(movie.poster_path){
-            posterContainer.appendChild(imgS);
-        }
-
-        //----------------inserindo titulo-----------------
-        var divTitle = document.createElement('div');
-        divTitle.innerHTML = movie.title;
-
-        title.appendChild(divTitle);
-        info.appendChild(title);
-
-        //----------------inserindo porcentagem-----------------
-        var percentage = document.createElement('div');
-        percentage.setAttribute('class', 'percentage');
+    //inserindo porcentagem
+    var percentage = document.createElement('div');
+    percentage.setAttribute('class', 'percentage');
+    if(movie.vote_average){
         percentage.innerHTML = movie.vote_average;
+    }
+    movieData.appendChild(percentage);
+    info.appendChild(movieData);
 
-        movieData.appendChild(percentage);
-        info.appendChild(movieData);
-
-        //----------------inserindo ano de lancamento-----------------
-        var year = document.createElement('span');
-        year.setAttribute('class', 'year');
+    //inserindo ano de lancamento
+    var year = document.createElement('div');
+    year.setAttribute('class', 'year');
+    if(movie.release_date){
         year.innerHTML = movie.release_date;
+    }
+    movieData.appendChild(year);
+    info.appendChild(movieData);
 
-        movieData.appendChild(year);
-        info.appendChild(movieData);
-
-
-        //----------------inserindo sinopse-----------------
-        var sinopse = document.createElement('div');
-        sinopse.setAttribute('class', 'sinopse');
+    //inserindo sinopse
+    var sinopse = document.createElement('div');
+    sinopse.setAttribute('class', 'sinopse');
+    if(movie.overview){
         sinopse.innerHTML = movie.overview;
+    }
 
-        //sinopse.appendChild(paragraph);
-        movieData.appendChild(sinopse);
+    movieData.appendChild(sinopse);
+    info.appendChild(movieData);
+
+    //inserindo genero
+    var genreHolder = document.createElement('div');
+    genreHolder.setAttribute('class', 'genreHolder');
+    for (var j = 0; j < 3; j++) {
+        genreId = movie.genre_ids[j];
+        var genre = genreIdToString(genreId);
+
+        if (j === 0 && genre) {
+            var genreSpan1 = document.createElement('div');
+            genreSpan1.setAttribute('class', 'genre');
+            genreSpan1.innerHTML = genre;
+
+            genreHolder.appendChild(genreSpan1);
+        } else if (j === 1 && genre) {
+            var genre2Details = document.createElement('div');
+            genre2Details.setAttribute('class', 'genre');
+            genre2Details.innerHTML = genre;
+
+            genreHolder.appendChild(genre2Details);
+        } else if(genre){
+            var genre3Details = document.createElement('div');
+            genre3Details.setAttribute('class', 'genre');
+             genre3Details.innerHTML = genre;
+
+            genreHolder.appendChild(genre3Details);
+        }
+         movieData.appendChild(genreHolder);
         info.appendChild(movieData);
 
-        //----------------inserindo genero-----------------
-        var genreHolder = document.createElement('div');
-        genreHolder.setAttribute('class', 'genreHolder');
-        for (var j = 0; j < 3; j++) {
-            genreId = movie.genre_ids[j];
-            var genre = checkGenre(genreId);
+    }
 
-            if (j === 0 && genre) {
-                var genreSpan1 = document.createElement('div');
-                genreSpan1.setAttribute('class', 'genre');
-                genreSpan1.innerHTML = genre;
+    movieCard.appendChild(posterContainer);
+    movieCard.appendChild(info);
 
-                genreHolder.appendChild(genreSpan1);
-            } else if (j === 1 && genre) {
-                var genre2Details = document.createElement('div');
-                genre2Details.setAttribute('class', 'genre');
-                genre2Details.innerHTML = genre;
-
-                genreHolder.appendChild(genre2Details);
-            } else if(genre){
-                var genre3Details = document.createElement('div');
-                genre3Details.setAttribute('class', 'genre');
-                genre3Details.innerHTML = genre;
-
-                genreHolder.appendChild(genre3Details);
-            }
-            movieData.appendChild(genreHolder);
-            info.appendChild(movieData);
-
-        }
-
-        movieCard.appendChild(posterContainer);
-        movieCard.appendChild(info);
-
-        return movieCard;
+    return movieCard;
 
 }
 
 function generateMovieDetails(movie){
     console.log('dale boy e o movie id é', movie.id);
-    //criando a div que vai comportar dados do filme(detailsCard) + trailer
+    //gerando a div que comporta toda a estrutura dos dados detalhados do filme (detailsMovieCard + detailsTitleCard)
     var detailsCard = document.createElement('div');
     detailsCard.setAttribute('class', 'detailsCard');
 
+    //gerando div que comporta o titulo e ano
     var detailsTitleCard = document.createElement('div');
     detailsTitleCard.setAttribute('class', 'detailsTitleCard');
 
+    //gerando div que comporta os dados do filme e o poster
     var detailsMovieCard = document.createElement('div');
     detailsMovieCard.setAttribute('class', 'detailsMovieCard');
 
+    //gerando div que comporta os dados do filme
     var detailsInfoCard = document.createElement('div');
     detailsInfoCard.setAttribute('class', 'detailsInfoCard');
 
+    //gerando div que comporta o poster
     var detailsPosterContainer = document.createElement('div');
     detailsPosterContainer.setAttribute('class', 'detailsPosterContainer');
 
@@ -256,7 +308,8 @@ function generateMovieDetails(movie){
 
     var dataIdioma = document.createElement('div');
     dataIdioma.setAttribute('class', 'data');
-    dataIdioma.innerHTML = movie.spoken_languages[0].name;
+    searchAndInsertLanguages(dataIdioma, movie.original_language);
+    //dataIdioma.innerHTML = movie.spoken_languages[0].name;
 
     dataContainerIdioma.appendChild(dataIdiomaTitle);
     dataContainerIdioma.appendChild(dataIdioma);
@@ -292,8 +345,8 @@ function generateMovieDetails(movie){
 
     var dataOrcamento = document.createElement('div');
     dataOrcamento.setAttribute('class', 'data');
-    dataOrcamento.innerHTML = '$' + movie.budget;
-
+    dataOrcamento.innerHTML = '$' + (movie.budget).toLocaleString('pt-BR');
+    
     dataContainerOrcamento.appendChild(dataOrcamentoTitle);
     dataContainerOrcamento.appendChild(dataOrcamento);
 
@@ -310,8 +363,8 @@ function generateMovieDetails(movie){
 
     var dataReceita = document.createElement('div');
     dataReceita.setAttribute('class', 'data');
-    dataReceita.innerHTML = '$' + movie.revenue;
-
+    dataReceita.innerHTML = '$' + (movie.revenue).toLocaleString('pt-BR');
+    
     dataContainerReceita.appendChild(dataReceitaTitle);
     dataContainerReceita.appendChild(dataReceita);
 
@@ -328,7 +381,7 @@ function generateMovieDetails(movie){
     var dataLucro = document.createElement('div');
     dataLucro.setAttribute('class', 'data');
     var lucro = movie.revenue - movie.budget;
-    dataLucro.innerHTML = '$' + lucro;
+    dataLucro.innerHTML = '$' + (lucro).toLocaleString('pt-BR');
 
     dataContainerLucro.appendChild(dataLucroTitle);
     dataContainerLucro.appendChild(dataLucro);
@@ -344,103 +397,111 @@ function generateMovieDetails(movie){
     var percentageDetailsHolder = document.createElement('div');
     percentageDetailsHolder.setAttribute('class', 'percentageDetailsHolder');
 
-        //----------------inserindo imagem-----------------
-        var imgB = document.createElement('img');
+    //----------------inserindo imagem-----------------
+    var imgB = document.createElement('img');
+    if (movie.poster_path) {
         imgB.src = imagesUrlBig + movie.poster_path;
-        if(movie.poster_path){
-            detailsPosterContainer.appendChild(imgB);
-        }
+    }
+            
+    detailsPosterContainer.appendChild(imgB);
 
-        //----------------inserindo titulo-----------------
+    //----------------inserindo titulo-----------------
 
-        var detailsSpanTitle = document.createElement('span');
-        detailsSpanTitle.setAttribute('class', 'spanTitle');
+    var detailsSpanTitle = document.createElement('span');
+    detailsSpanTitle.setAttribute('class', 'spanTitle');
+    if(movie.title){
         detailsSpanTitle.innerHTML = movie.title;
+    }
 
-        detailsTitleCard.appendChild(detailsSpanTitle);
+    detailsTitleCard.appendChild(detailsSpanTitle);
 
 
-        //----------------inserindo ano de lancamento-----------------
+    //----------------inserindo ano de lancamento-----------------
 
-        var detailsYear = document.createElement('span');
-        detailsYear.setAttribute('class', 'spanYear');
+    var detailsYear = document.createElement('span');
+    detailsYear.setAttribute('class', 'spanYear');
+    if(movie.release_date){
         detailsYear.innerHTML = movie.release_date;
+    }
 
-        detailsTitleCard.appendChild(detailsYear);
+    detailsTitleCard.appendChild(detailsYear);
 
 
-        //----------------inserindo sinopse-----------------
+    //----------------inserindo sinopse-----------------
 
-        var detailsSinopseP = document.createElement('p');
+    var detailsSinopseP = document.createElement('p');
+    if(movie.overview){
         detailsSinopseP.innerHTML = movie.overview;
+    }
 
-        detailsSinopseText.appendChild(detailsSinopseP);
+    detailsSinopseText.appendChild(detailsSinopseP);
 
-        //---------------inserindo genero------------------
-        for (var j = 0; j < 3; j++) {
-            genre = movie.genres[j];
-            console.log('genero ', genre);
+    //---------------inserindo genero------------------
+    for (var j = 0; j < 3; j++) {
+        genre = movie.genres[j];
+        console.log('genero ', genre);
 
-            if (j === 0 && genre) {
-                var genre1Details = document.createElement('div');
-                genre1Details.setAttribute('class', 'genreDetails');
-                genre1Details.innerHTML = genre.name;
+        if (j === 0 && genre) {
+            var genre1Details = document.createElement('div');
+            genre1Details.setAttribute('class', 'genreDetails');
+            genre1Details.innerHTML = genre.name;
 
-                genreDetailsHolder.appendChild(genre1Details);
-            } else if (j === 1 && genre) {
-                var genre2Details = document.createElement('div');
-                genre2Details.setAttribute('class', 'genreDetails');
-                genre2Details.innerHTML = genre.name;
+            genreDetailsHolder.appendChild(genre1Details);
+        } else if (j === 1 && genre) {
+            var genre2Details = document.createElement('div');
+            genre2Details.setAttribute('class', 'genreDetails');
+            genre2Details.innerHTML = genre.name;
 
-                genreDetailsHolder.appendChild(genre2Details);
-            } else if(genre) {
-                var genre3Details = document.createElement('div');
-                genre3Details.setAttribute('class', 'genreDetails');
-                genre3Details.innerHTML = genre.name;
+            genreDetailsHolder.appendChild(genre2Details);
+        } else if(genre) {
+            var genre3Details = document.createElement('div');
+            genre3Details.setAttribute('class', 'genreDetails');
+            genre3Details.innerHTML = genre.name;
 
-                genreDetailsHolder.appendChild(genre3Details);
-            }
+            genreDetailsHolder.appendChild(genre3Details);
         }
+    }
 
-        //------------------------inserindo porcentagem----------
-        var percentageDetails = document.createElement('div');
-        percentageDetails.setAttribute('class', 'percentageDetails');
+    //------------------------inserindo porcentagem----------
+    var percentageDetails = document.createElement('div');
+    percentageDetails.setAttribute('class', 'percentageDetails');
+    if(movie.vote_average){
         percentageDetails.innerHTML = movie.vote_average;
+    }
 
-        percentageDetailsHolder.appendChild(percentageDetails);
+    percentageDetailsHolder.appendChild(percentageDetails);
 
+    //-----------------------inserindo elementos---------------
+    detailsSinopse.appendChild(detailsTitleSinopse);
+    detailsSinopse.appendChild(detailsSinopseText);
+    detailsInfoCard.appendChild(detailsSinopse);
+    detailsInfo.appendChild(detailsTitleInfo);
 
-        //-----------------------inserindo elementos---------------
-        detailsSinopse.appendChild(detailsTitleSinopse);
-        detailsSinopse.appendChild(detailsSinopseText);
-        detailsInfoCard.appendChild(detailsSinopse);
-        detailsInfo.appendChild(detailsTitleInfo);
+    detailsDataHolder.appendChild(dataContainerSituacao);
+    detailsDataHolder.appendChild(dataContainerIdioma);
+    detailsDataHolder.appendChild(dataContainerDuracao);
+    detailsDataHolder.appendChild(dataContainerOrcamento);
+    detailsDataHolder.appendChild(dataContainerReceita);
+    detailsDataHolder.appendChild(dataContainerLucro);
+    detailsInfo.appendChild(detailsDataHolder);
+    detailsInfoCard.appendChild(detailsInfo);
 
-        detailsDataHolder.appendChild(dataContainerSituacao);
-        detailsDataHolder.appendChild(dataContainerIdioma);
-        detailsDataHolder.appendChild(dataContainerDuracao);
-        detailsDataHolder.appendChild(dataContainerOrcamento);
-        detailsDataHolder.appendChild(dataContainerReceita);
-        detailsDataHolder.appendChild(dataContainerLucro);
-        detailsInfo.appendChild(detailsDataHolder);
-        detailsInfoCard.appendChild(detailsInfo);
+    genreAndPercentageHolder.appendChild(genreDetailsHolder);
+    genreAndPercentageHolder.appendChild(percentageDetailsHolder);
+    detailsInfoCard.appendChild(genreAndPercentageHolder);
 
-        genreAndPercentageHolder.appendChild(genreDetailsHolder);
-        genreAndPercentageHolder.appendChild(percentageDetailsHolder);
-        detailsInfoCard.appendChild(genreAndPercentageHolder);
+    detailsMovieCard.appendChild(detailsInfoCard);
+    detailsMovieCard.appendChild(detailsPosterContainer);
+    detailsCard.appendChild(detailsTitleCard);
+    detailsCard.appendChild(detailsMovieCard);
 
-        detailsMovieCard.appendChild(detailsInfoCard);
-        detailsMovieCard.appendChild(detailsPosterContainer);
-        detailsCard.appendChild(detailsTitleCard);
-        detailsCard.appendChild(detailsMovieCard);
+    console.log('details container direto da função: ', detailsContainer);
 
-        console.log('details container direto da função: ', detailsContainer);
-
-        return detailsCard;
+    return detailsCard;
     
 }
 
-function checkGenre(genreId){
+function genreIdToString(genreId){
     if (genreId === 28) {
         genreId = 'Ação';
     } else if (genreId === 12) {
@@ -484,6 +545,50 @@ function checkGenre(genreId){
     return genreId;
 }
 
+function genreStringToId(genre){
+    genre = genre.toLowerCase();
+    if (genre === 'acao' || genre === 'ação' || genre === 'açao' || genre === 'acão') {
+        genre = '28';
+    } else if (genre === 'aventura') {
+        genre = '12';
+    } else if (genre === 'animacao' || genre === 'animação' || genre === 'animaçao' || genre === 'animacão') {
+        genre = '16';
+    } else if (genre === 'comedia' || genre === 'comédia') {
+        genre = '35';
+    } else if (genre === 'crime') {
+        genre = '80';
+    } else if (genre === 'documentario' || genre === 'documentário') {
+        genre = '99';
+    } else if (genre === 'drama') {
+        genre = '18';
+    } else if (genre === 'familia' || genre === 'famílila') {
+        genre = '10751';
+    } else if (genre === 'fantasia') {
+        genre = '14';
+    } else if (genre === 'historia' || genre === 'história') {
+        genre = '36';
+    } else if (genre === 'terror') {
+        genre = '27';
+    } else if (genre === 'musica' || genre === 'música') {
+        genre = '10402';
+    } else if (genre === 'misterio' || genre === 'mistério') {
+        genre = '9648';
+    } else if (genre === 'romance') {
+        genre = '10749';
+    } else if (genre === 'ficcao cientifica' || genre === 'ficção científica') {
+        genre = '878';
+    } else if (genre === 'cinema tv') {
+        genre = '10770';
+    } else if (genre === 'thriller') {
+        genre = '53';
+    } else if (genre === 'guerra') {
+        genre = '10752';
+    } else if (genre === 'faroeste') {
+        genre = '37';
+    }
+
+    return genre;
+}
 
 //recebendo um array com objetos de filmes, cria uma estrutura que comporta todos os filmes+detalhes
 function generateMoviesInList(movies) {
@@ -492,12 +597,6 @@ function generateMoviesInList(movies) {
 
     for(var i=0; i<movies.length; i++){
         var movie = movies[i];
-
-        var dados = acessMovieData(movie.id);
-        if (dados) {
-            console.log('conseguiu retornar um valor! ', dados);
-        }
-
         var movieCard = generateMovieCard(movie);
 
         var movieHolder = document.createElement('div');
@@ -510,7 +609,6 @@ function generateMoviesInList(movies) {
     }
     return everything;
 }
-
 
 function generateMovieTrailer(video) {
     if(video){
@@ -529,15 +627,6 @@ function generateMovieTrailer(video) {
     }
 }
 
-function insertMovieDetails(movie, elementoDeInsercao) {
-    console.log('movie: ', movie);
-    var detailsContainer = generateMovieDetails(movie);
-
-    if(detailsContainer){
-        console.log('details container', detailsContainer);
-        elementoDeInsercao.appendChild(detailsContainer);
-    }
-}
 
 function generateTrailerTemplate(data, elementoDeInsercao) {
     var trailers = data.results;
@@ -547,12 +636,11 @@ function generateTrailerTemplate(data, elementoDeInsercao) {
     elementoDeInsercao.appendChild(iframe);
 }
 
-
 //delimita as ações para quando algo é clicado na tela (se for tag img ou com id "content-close")
 document.onclick = function (event) {
     var target = event.target;
     var details = document.getElementsByClassName('detailsCard').length;
-    if (target.tagName.toLowerCase() === 'img' && target.parentElement.class !== 'detailsPosterContainer' && !details) {
+    if ((target.tagName.toLowerCase() === 'img') && target.parentElement.class !== 'detailsPosterContainer' && !details) {
         console.log('imagem clicada: ', event);
         var movieId = target.dataset.movieId;
         console.log('Movie Id: ', movieId);
@@ -573,29 +661,18 @@ document.onclick = function (event) {
         //detailsCardHolder.classList.add('content-dispay'); //adiciono uma classe css nesse elemento, que é jusatmente a div de dados do filme
        
         var movieUrl = generateMoviesUrl(movieId);
-        fetch(movieUrl)
-            .then((res) => res.json())
-            .then((data) => {
-                //exibir os trailers
-                console.log('Trailers: ', data);
-                insertMovieDetails(data, detailsContainer);
-            })
-            .catch((error) => {
-                console.log('Error: ', error);
-            });
+
+        request(movieUrl, (data) => {
+            console.log('Trailers: ', data);
+            insertMovieDetails(data, detailsContainer);
+        }, handleError);
 
         var trailerUrl = generateTrailerUrl(movieId);
 
-        fetch(trailerUrl)
-            .then((res) => res.json())
-            .then((data) => {
-                //exibir os trailers
-                console.log('Trailers: ', data);
-                generateTrailerTemplate(data, detailsCardHolder);
-            })
-            .catch((error) => {
-                console.log('Error: ', error);
-            });
+        request(trailerUrl, (data)=>{
+            console.log('Trailers: ', data);
+            generateTrailerTemplate(data, detailsCardHolder);
+        }, handleError);
     }
 
     if (target.className === 'detailsTitleCard' || target.className === 'spanTitle' || target.className === 'spanYear') {
