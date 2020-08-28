@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Movie App</title>
+        <link rel="stylesheet" href="./assets/css/style.css">
+    </head>
+    <body>
+        <header>
+            <h1>Movies</h1>
+        </header>
+
+        <div class="container">
+
+            <div class="searchBarContainer">
+                <form class="searchMovie">
+                    <input type="text" id="searchBar" placeholder="Busque um filme por nome, ano ou gênero...">
+                    <!--preciso remover o botão e dar um jeito de dar submit apenas com um enter na barra de busca-->
+                    <button type="submit" id="search">Buscar</button>
+                </form>
+            </div>
+
+            <div id="movieContainer"></div>
+
+            <div id='detailsContainer'></div>
+
+        </div>
+
+        <script src="./assets/js/script.js"></script>
+    </body>
+</html>
