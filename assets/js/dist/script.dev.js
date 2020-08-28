@@ -52,25 +52,15 @@ function searchMovie(value) {
   }
 
   request(url, iterateMovies, handleError);
-}
+} //dando request nos dados de línguas, iterando sobre eles e invocando a função para inserir o dado em um elemento
+
 
 function searchAndInsertLanguages(elementoDeInsercao, languageId) {
   var url = languageUrl;
   request(url, function (data) {
     insertLanguage(data, elementoDeInsercao, languageId);
   }, handleError);
-}
-/*
-function iterateLanguage(data, languageId){
-    var language;
-    console.log('lingua: ', data);
-    for(var i=0; i<data.length; i++){
-        language = data[i];
-        if(languageId === language.iso_639_1){
-            return language.name;
-        }
-    }
-}*/
+} //usando os dados recebidos do request para inserir o dado 'ingua' em um elemento
 
 
 function insertLanguage(data, elementoDeInsercao, languageId) {
@@ -84,7 +74,8 @@ function insertLanguage(data, elementoDeInsercao, languageId) {
       elementoDeInsercao.innerHTML = language.name;
     }
   }
-}
+} //recebe dados do request e insere os detalhes do flme em questão
+
 
 function insertMovieDetails(movie, elementoDeInsercao) {
   console.log('movie: ', movie);
@@ -113,17 +104,15 @@ function generateMovieList(movies) {
   var list = generateMoviesInList(movies);
   movieList.appendChild(list);
   return movieList;
-} //construindo a barra de busca
+} //construindo a barra de busca e estabelecendo seu funcionamento
 
 
 searchButton.onclick = function (event) {
-  event.preventDefault(); //o navegador não vai tentar enviar nada ao servidor
-
+  event.preventDefault();
   var value = inputElement.value;
+  value = value.toLowerCase();
   searchMovie(value);
-  inputElement.value = ''; //reseta o valor inserido na barra de busca
-
-  console.log('Value: ', value);
+  inputElement.value = '';
 }; //gerando o card de cada filme separadamente
 
 
@@ -223,11 +212,11 @@ function generateMovieCard(movie) {
   movieCard.appendChild(posterContainer);
   movieCard.appendChild(info);
   return movieCard;
-}
+} //gerando o card com os detalhes dos filmes
+
 
 function generateMovieDetails(movie) {
-  console.log('dale boy e o movie id é', movie.id); //gerando a div que comporta toda a estrutura dos dados detalhados do filme (detailsMovieCard + detailsTitleCard)
-
+  //gerando a div que comporta toda a estrutura dos dados detalhados do filme (detailsMovieCard + detailsTitleCard)
   var detailsCard = document.createElement('div');
   detailsCard.setAttribute('class', 'detailsCard'); //gerando div que comporta o titulo e ano
 
@@ -241,7 +230,8 @@ function generateMovieDetails(movie) {
   detailsInfoCard.setAttribute('class', 'detailsInfoCard'); //gerando div que comporta o poster
 
   var detailsPosterContainer = document.createElement('div');
-  detailsPosterContainer.setAttribute('class', 'detailsPosterContainer');
+  detailsPosterContainer.setAttribute('class', 'detailsPosterContainer'); //gerando div que comporta os dados da sinopse
+
   var detailsSinopse = document.createElement('div');
   detailsSinopse.setAttribute('class', 'detailsSinopse');
   var detailsInfo = document.createElement('div');
@@ -438,9 +428,13 @@ function generateMovieDetails(movie) {
   detailsMovieCard.appendChild(detailsPosterContainer);
   detailsCard.appendChild(detailsTitleCard);
   detailsCard.appendChild(detailsMovieCard);
-  console.log('details container direto da função: ', detailsContainer);
   return detailsCard;
 }
+/*função para converter generos de id->string (poderia ter feito uma função, como fiz com a língua. Mas me pareceu menos 
+esforço buscar manualmente os dados e construir a série de 'ifs' que dedicar mais tempo a estudo e pesquisa de estruturas 
+além de construí-las).
+*/
+
 
 function genreIdToString(genreId) {
   if (genreId === 28) {
@@ -454,7 +448,7 @@ function genreIdToString(genreId) {
   } else if (genreId === 80) {
     genreId = 'Crime';
   } else if (genreId === 99) {
-    genreId = 'Crime';
+    genreId = 'Documentário';
   } else if (genreId === 18) {
     genreId = 'Drama';
   } else if (genreId === 10751) {
@@ -484,7 +478,8 @@ function genreIdToString(genreId) {
   }
 
   return genreId;
-}
+} //função para converter gêneros de string->id
+
 
 function genreStringToId(genre) {
   genre = genre.toLowerCase();
@@ -530,7 +525,7 @@ function genreStringToId(genre) {
   }
 
   return genre;
-} //recebendo um array com objetos de filmes, cria uma estrutura que comporta todos os filmes+detalhes
+} //gerando as estruturas dos filmes de forma individual, e retornando-as em uma estrutura maior
 
 
 function generateMoviesInList(movies) {
@@ -550,7 +545,8 @@ function generateMoviesInList(movies) {
   }
 
   return everything;
-}
+} //gera o trailer e a estrutura que o comporta
+
 
 function generateMovieTrailer(video) {
   if (video) {
@@ -563,27 +559,24 @@ function generateMovieTrailer(video) {
     trailerContainer.appendChild(iframe);
     return trailerContainer;
   }
-}
+} //evoca a função que gera a estrutura do trailer e a insere em outro elemento
 
-function generateTrailerTemplate(data, elementoDeInsercao) {
+
+function insertTrailer(data, elementoDeInsercao) {
   var trailers = data.results;
   trailer = trailers[0];
   var iframe = generateMovieTrailer(trailer);
   elementoDeInsercao.appendChild(iframe);
-} //delimita as ações para quando algo é clicado na tela (se for tag img ou com id "content-close")
+} //delimita as ações para o funcionamento da estrutura que comporta os detalhes dos filmes+trailer
 
 
 document.onclick = function (event) {
   var target = event.target;
-  var details = document.getElementsByClassName('detailsCard').length;
+  var details = document.getElementsByClassName('detailsCard').length; //se a imagem do movieCard é clicada, gerar os detalhes+trailer do filme
 
   if (target.tagName.toLowerCase() === 'img' && target.parentElement["class"] !== 'detailsPosterContainer' && !details) {
-    console.log('imagem clicada: ', event);
     var movieId = target.dataset.movieId;
-    console.log('Movie Id: ', movieId); //essa estrutura DEVERÁ ser mudada quando eu fizer a interface dos resultados da pesquisa
-
-    var posterContainer = target.parentElement; //section é o elemento pai do elemento que eu clico
-
+    var posterContainer = target.parentElement;
     var movieCard = posterContainer.parentElement;
     var movieHolder = movieCard.parentElement;
     var detailsCardHolder = document.createElement('div');
@@ -591,8 +584,7 @@ document.onclick = function (event) {
     var detailsContainer = document.createElement('div');
     detailsContainer.setAttribute('class', 'detailsContainer');
     detailsCardHolder.appendChild(detailsContainer);
-    movieHolder.appendChild(detailsCardHolder); //detailsCardHolder.classList.add('content-dispay'); //adiciono uma classe css nesse elemento, que é jusatmente a div de dados do filme
-
+    movieHolder.appendChild(detailsCardHolder);
     var movieUrl = generateMoviesUrl(movieId);
     request(movieUrl, function (data) {
       console.log('Trailers: ', data);
@@ -601,9 +593,10 @@ document.onclick = function (event) {
     var trailerUrl = generateTrailerUrl(movieId);
     request(trailerUrl, function (data) {
       console.log('Trailers: ', data);
-      generateTrailerTemplate(data, detailsCardHolder);
+      insertTrailer(data, detailsCardHolder);
     }, handleError);
-  }
+  } //se a barra superior da estrutura que comporta detalhes+trailer de um filme é clicada, o elemento deve ser removido da página
+
 
   if (target.className === 'detailsTitleCard' || target.className === 'spanTitle' || target.className === 'spanYear') {
     var toHide;
@@ -614,7 +607,6 @@ document.onclick = function (event) {
       toHide = target.parentElement.parentElement.parentElement;
     }
 
-    console.log('toHide ', toHide);
     toHide.remove();
   }
 };
