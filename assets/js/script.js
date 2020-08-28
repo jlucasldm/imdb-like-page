@@ -51,14 +51,6 @@ function handleError(error) {
 }
 
 function logMoviesData(moviesUrl) {
-    /*fetch(moviesUrl)
-        .then((res) => {
-            var resultado = res.json();
-            console.log('resultado: ', resultado);
-            return resultado;})
-        .catch((error) => {
-            console.log('Error: ', error);
-        });*/
     request(moviesUrl,((data) => {
         console.log('log_movies_data: ', data);
     }), handleError);
@@ -68,11 +60,6 @@ function logMoviesData(moviesUrl) {
 function acessMovieData(movieId) {
     var url = generateMoviesUrl(movieId);
     logMoviesData(url);
-    //return data;
-    /*request(url, (data) => {
-        console.log('Dados detalhados do filme: ', data);
-        return data;
-    }, handleError);*/
 }
 
 //responsável por construir os cards dos filmes recebendo um array com objetos de filmes
@@ -113,10 +100,6 @@ function generateMovieCard(movie){
     var movieData = document.createElement('div');
     movieData.setAttribute('class', 'movieData');
 
-    //var percentage = document.createElement('div');
-    //percentage.setAttribute('class', 'percentage');
-
-
         //----------------inserindo imagem-----------------
         var imgS = document.createElement('img');
         imgS.src = imagesUrlSmall + movie.poster_path;
@@ -127,12 +110,6 @@ function generateMovieCard(movie){
         }
 
         //----------------inserindo titulo-----------------
-        /*var spanTitle = document.createElement('span');
-        spanTitle.innerHTML = movie.title;
-
-        title.appendChild(spanTitle);
-        info.appendChild(title);*/
-
         var divTitle = document.createElement('div');
         divTitle.innerHTML = movie.title;
 
@@ -140,13 +117,10 @@ function generateMovieCard(movie){
         info.appendChild(title);
 
         //----------------inserindo porcentagem-----------------
-        //var spanPercentage = document.createElement('span');
-        //spanPercentage.innerHTML = movie.vote_average;
         var percentage = document.createElement('div');
         percentage.setAttribute('class', 'percentage');
         percentage.innerHTML = movie.vote_average;
 
-        //percentage.appendChild(spanPercentage);
         movieData.appendChild(percentage);
         info.appendChild(movieData);
 
@@ -162,17 +136,12 @@ function generateMovieCard(movie){
         //----------------inserindo sinopse-----------------
         var sinopse = document.createElement('div');
         sinopse.setAttribute('class', 'sinopse');
-        //var paragraph =document.createElement('p');
-        //paragraph.innerHTML = movie.overview;
         sinopse.innerHTML = movie.overview;
 
         //sinopse.appendChild(paragraph);
         movieData.appendChild(sinopse);
         info.appendChild(movieData);
 
-        //if (movie.genre_ids) {
-        //var genreList = getGenre(genreUrl);
-        //console.log('lista de generos ', genreList);
         //----------------inserindo genero-----------------
         var genreHolder = document.createElement('div');
         genreHolder.setAttribute('class', 'genreHolder');
@@ -180,9 +149,6 @@ function generateMovieCard(movie){
             genreId = movie.genre_ids[j];
             var genre = checkGenre(genreId);
 
-            //var genre = translateGenre(genreId, genreList);
-
-            //console.log('o genero aí ', genreId);
             if (j === 0 && genre) {
                 var genreSpan1 = document.createElement('div');
                 genreSpan1.setAttribute('class', 'genre');
@@ -209,7 +175,7 @@ function generateMovieCard(movie){
 
         movieCard.appendChild(posterContainer);
         movieCard.appendChild(info);
-        //everything.appendChild(movieCard);
+
         return movieCard;
 
 }
@@ -217,8 +183,6 @@ function generateMovieCard(movie){
 function generateMovieDetails(movie){
     console.log('dale boy e o movie id é', movie.id);
     //criando a div que vai comportar dados do filme(detailsCard) + trailer
-    //var detailsContainer = document.createElement('div');
-    //detailsContainer.setAttribute('class', 'detailsContainer');
     var detailsCard = document.createElement('div');
     detailsCard.setAttribute('class', 'detailsCard');
 
@@ -380,8 +344,6 @@ function generateMovieDetails(movie){
     var percentageDetailsHolder = document.createElement('div');
     percentageDetailsHolder.setAttribute('class', 'percentageDetailsHolder');
 
-
-    
         //----------------inserindo imagem-----------------
         var imgB = document.createElement('img');
         imgB.src = imagesUrlBig + movie.poster_path;
@@ -413,9 +375,6 @@ function generateMovieDetails(movie){
         detailsSinopseP.innerHTML = movie.overview;
 
         detailsSinopseText.appendChild(detailsSinopseP);
-
-        //----------------inserindo dados detalhados--------
-
 
         //---------------inserindo genero------------------
         for (var j = 0; j < 3; j++) {
@@ -474,11 +433,9 @@ function generateMovieDetails(movie){
         detailsMovieCard.appendChild(detailsPosterContainer);
         detailsCard.appendChild(detailsTitleCard);
         detailsCard.appendChild(detailsMovieCard);
-        //detailsContainer.appendChild(detailsCard);
 
         console.log('details container direto da função: ', detailsContainer);
 
-        //return (detailsContainer);
         return detailsCard;
     
 }
@@ -556,8 +513,6 @@ function generateMoviesInList(movies) {
 
 
 function generateMovieTrailer(video) {
-    //var trailerHolder = document.createElement('div');
-    //trailerHolder.setAttribute('class', 'trailerHolder');
     if(video){
         var trailerContainer = document.createElement('div');
         trailerContainer.setAttribute('class', 'trailerContainer');
@@ -566,16 +521,15 @@ function generateMovieTrailer(video) {
         iframe.setAttribute('class', 'trailerIframe');
 
         iframe.src = `https://www.youtube.com/embed/${video.key}`;
-        //colocar no css depois
+
         iframe.allowFullscreen = true;
         trailerContainer.appendChild(iframe);
         return trailerContainer;
-        //return iframe;
+
     }
 }
 
 function insertMovieDetails(movie, elementoDeInsercao) {
-    //movie é um objeto com varios dados do filme tlg
     console.log('movie: ', movie);
     var detailsContainer = generateMovieDetails(movie);
 
@@ -587,13 +541,9 @@ function insertMovieDetails(movie, elementoDeInsercao) {
 
 function generateTrailerTemplate(data, elementoDeInsercao) {
     var trailers = data.results;
-    //var trailerContainer = document.createElement('div');
-    //trailerContainer.setAttribute('class', 'trailerContainer');
-
     trailer = trailers[0];
     var iframe = generateMovieTrailer(trailer);
-    //trailerContainer.appendChild(iframe);
-    //elementoDeInsercao.appendChild(trailerContainer);
+
     elementoDeInsercao.appendChild(iframe);
 }
 
@@ -656,10 +606,7 @@ document.onclick = function (event) {
             toHide = target.parentElement.parentElement.parentElement;
         }
         
-        //var toHide = document.getElementsByClassName('detailsContainer'); //detailsCardHolder
         console.log('toHide ', toHide);
         toHide.remove();
-        //content.classList.remove('content-dispay');
-        //console.log('Elemento retornado: ', content);
     }
 };
